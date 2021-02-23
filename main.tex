@@ -1,0 +1,96 @@
+\documentclass[twocolumn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{listings}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\hypersetup{
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
+
+\lstset{
+	language=bash,
+	basicstyle=\ttfamily,
+	breaklines=true,
+	postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
+
+\title{\textbf{WSL Config for Web Development}}
+\author{Javier Reyes Acevedo}
+
+\begin{document}
+\maketitle
+
+\section{Update the WSL installation}
+Once we installed the WSL and configure the user in the first run of the distro we choose, we need to update all dependencies and repositories by running the following commands.
+	
+\begin{lstlisting}
+sudo apt update
+sudo apt upgrade
+\end{lstlisting}
+
+After the update we are ready to install the necessary packages for a web development environment.
+
+\section{Setting up the LEMP stack}
+To work with a local web service, the \textbf{LEMP}\footnote{Everytime we "turn on" the WSL we need to start the LEMP services. Otherwise we will not have the server active.} stack is installed. It consists of \textit{Linux}, \textit{Nginx}, \textit{MySQL} and \textit{PHP}, hence the acronym.
+
+Since we already have Linux installed and upgraded (Ubuntu), we will now proceed to install the rest of the software.
+
+In first place, to install Nginx we need to run the following command.
+
+\begin{lstlisting}
+sudo apt install nginx
+\end{lstlisting}
+
+Now to install MySQL we run the following command.
+
+\begin{lstlisting}
+sudo apt install mysql
+\end{lstlisting}
+
+Once the installation is finished we need to setup the MySQL root user and other extra configurations. The easiest way to do this is to run the MySQL secure installation command and follow the instruction.
+
+\begin{lstlisting}
+sudo mysql_secure_installation
+\end{lstlisting}
+
+Finally, we need to install PHP so that the server can recognize files ending with that extension. This time we will install multiple packages to avoid future conflicts with either \textit{Composer}, \textit{Laravel} or \mbox{\textit{phpMyAdmin}}.
+
+But before install the PHP packages, \textbf{zip} and \mbox{\textbf{unzip}} packages will be installed to handle the decompression of certain files later on.
+
+\begin{lstlisting}
+sudo apt install zip unzip
+\end{lstlisting}
+
+Now, for the PHP packages:
+
+\begin{lstlisting}
+sudo apt install php-fpm php-mysql php-zip php-mbstring php-xml php-curl
+\end{lstlisting}
+
+Once PHP is installed we need to configure the sites to read this type of files. We can create a new site route (see a detailed explanation in the \href{https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-20-04}{Digital Ocean} site) or edit the \textbf{default} one in the initial \mbox{Nginx} configuration to allow it to read PHP files. To achieve this we need to edit the default file located in the sites-enabled folder with some text editor.
+
+\begin{lstlisting}
+sudo vim /etc/nginx/sites-enabled/default
+\end{lstlisting}
+
+Inside the file add index.php to the index list and uncomment the lines of PHP script. After this, it is necessary to restart Nginx for the changes to take effect.
+
+This completes the installation of the LEMP stack.
+
+If some \textbf{\textcolor{red}{error}} related to a directory during the initialization of the MySQL service appear, we need to stop the service and change the home directory of MySQL from a non-existing one to the original one which is where it is supposed to be. To do this with execute the following command.
+
+\begin{lstlisting}
+sudo usermod -d /var/lib/mysql/ mysql
+\end{lstlisting}
+
+\section{Composer installation}
+
+\end{document}
